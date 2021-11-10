@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Build') { 
             steps {
-                aws cloudformation deploy --template-file awsbackup.yaml --stack-name my-new-stack
+                aws ec2 describe-instances --instance-ids i-0734f847eee42c09e --region eu-west-1
             }
         }
         
