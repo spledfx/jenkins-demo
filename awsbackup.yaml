@@ -1,0 +1,130 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "AWS Backup CF Template"
+Resources:
+  BackupVaultMonthly:
+    Type: "AWS::Backup::BackupVault"
+    Properties:
+      BackupVaultName: "edfx-monthly-backup-vault"
+
+  BackupVaultArchive:
+    Type: "AWS::Backup::BackupVault"
+    Properties:
+      BackupVaultName: "edfx-backup-archive-vault"
+
+  BackupVaultDaily:
+    Type: "AWS::Backup::BackupVault"
+    Properties:
+      BackupVaultName: "edfx-new-daily-backup-vault"
+
+  BackupVaultWeekly:
+    Type: "AWS::Backup::BackupVault"
+    Properties:
+      BackupVaultName: "edfx-weekly-backup-vault"
+
+  BackupPlanDaily:
+    Type: "AWS::Backup::BackupPlan"
+    Properties:
+      BackupPlan:
+        BackupPlanName: "edfx-daily-backup-plan"
+        BackupPlanRule:
+          - CompletionWindowMinutes: 10080
+            Lifecycle:
+              DeleteAfterDays: 10
+            RecoveryPointTags: {}
+            RuleName: "edfx-daily-backup-rule"
+            ScheduleExpression: "cron(0 3 ? * * *)"
+            StartWindowMinutes: 60
+            TargetBackupVault: !Ref BackupVaultDaily
+
+  BackupPlanMonthly:
+    Type: "AWS::Backup::BackupPlan"
+    Properties:
+      BackupPlan:
+        BackupPlanName: "edfx-monthly-backup-plan"
+        BackupPlanRule:
+          - CompletionWindowMinutes: 10080
+            Lifecycle:
+              DeleteAfterDays: 90
+            RecoveryPointTags: {}
+            RuleName: "edfx-monthly-backup-rule"
+            ScheduleExpression: "cron(0 2 1 * ? *)"
+            StartWindowMinutes: 60
+            TargetBackupVault: !Ref BackupVaultMonthly
+
+  BackupPlanWeekly:
+    Type: "AWS::Backup::BackupPlan"
+    Properties:
+      BackupPlan:
+        BackupPlanName: "edfx-weekly-backup-plan"
+        BackupPlanRule:
+          - CompletionWindowMinutes: 10080
+            Lifecycle:
+              DeleteAfterDays: 21
+            RecoveryPointTags: {}
+            RuleName: "edfx-weekly-backup-rule"
+            ScheduleExpression: "cron(0 5 ? * 1 *)"
+            StartWindowMinutes: 60
+            TargetBackupVault: !Ref BackupVaultWeekly
+
+  BackupPlanArchive:
+    Type: "AWS::Backup::BackupPlan"
+    Properties:
+      BackupPlan:
+        BackupPlanName: "edfx-backup-archive-plan"
+        BackupPlanRule:
+          - CompletionWindowMinutes: 10080
+            Lifecycle:
+              DeleteAfterDays: 1825
+            RecoveryPointTags: {}
+            RuleName: "edfx-backup-archive-rule"
+            ScheduleExpression: "cron(0 5 ? * 1#1 *)"
+            StartWindowMinutes: 60
+            TargetBackupVault: !Ref BackupVaultArchive
+
+  BackupSelectionDaily:
+    Type: "AWS::Backup::BackupSelection"
+    Properties:
+      BackupPlanId: !Ref BackupPlanDaily
+      BackupSelection:
+        SelectionName: "edfx-daily-backup-resources"
+        IamRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AWSBackupDefaultServiceRole"
+        ListOfTags:
+          - ConditionType: "STRINGEQUALS"
+            ConditionKey: "edfx-backup-d"
+            ConditionValue: "daily"
+
+  BackupSelectionMonthly:
+    Type: "AWS::Backup::BackupSelection"
+    Properties:
+      BackupPlanId: !Ref BackupPlanMonthly
+      BackupSelection:
+        SelectionName: "edfx-monthly-backup-resources"
+        IamRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AWSBackupDefaultServiceRole"
+        ListOfTags:
+          - ConditionType: "STRINGEQUALS"
+            ConditionKey: "edfx-backup-m"
+            ConditionValue: "monthly"
+
+  BackupSelectionWeekly:
+    Type: "AWS::Backup::BackupSelection"
+    Properties:
+      BackupPlanId: !Ref BackupPlanWeekly
+      BackupSelection:
+        SelectionName: "edfx-weekly-backup-resources"
+        IamRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AWSBackupDefaultServiceRole"
+        ListOfTags:
+          - ConditionType: "STRINGEQUALS"
+            ConditionKey: "edfx-backup-w"
+            ConditionValue: "weekly"
+
+  BackupSelectionArchive:
+    Type: "AWS::Backup::BackupSelection"
+    Properties:
+      BackupPlanId: !Ref BackupPlanArchive
+      BackupSelection:
+        SelectionName: "edfx-backup-archive-resources"
+        IamRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AWSBackupDefaultServiceRole"
+        ListOfTags:
+          - ConditionType: "STRINGEQUALS"
+            ConditionKey: "edfx-backup-archive"
+            ConditionValue: "five-years"
