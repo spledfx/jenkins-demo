@@ -4,34 +4,34 @@ Resources:
   BackupVaultMonthly:
     Type: "AWS::Backup::BackupVault"
     Properties:
-      BackupVaultName: "edfx-monthly-backup-vault"
+      BackupVaultName: "rsr-monthly-backup-vault"
 
   BackupVaultArchive:
     Type: "AWS::Backup::BackupVault"
     Properties:
-      BackupVaultName: "edfx-backup-archive-vault"
+      BackupVaultName: "rsr-backup-archive-vault"
 
   BackupVaultDaily:
     Type: "AWS::Backup::BackupVault"
     Properties:
-      BackupVaultName: "edfx-new-daily-backup-vault"
+      BackupVaultName: "rsr-new-daily-backup-vault"
 
   BackupVaultWeekly:
     Type: "AWS::Backup::BackupVault"
     Properties:
-      BackupVaultName: "edfx-weekly-backup-vault"
+      BackupVaultName: "rsr-weekly-backup-vault"
 
   BackupPlanDaily:
     Type: "AWS::Backup::BackupPlan"
     Properties:
       BackupPlan:
-        BackupPlanName: "edfx-daily-backup-plan"
+        BackupPlanName: "rsr-daily-backup-plan"
         BackupPlanRule:
           - CompletionWindowMinutes: 10080
             Lifecycle:
               DeleteAfterDays: 10
             RecoveryPointTags: {}
-            RuleName: "edfx-daily-backup-rule"
+            RuleName: "rsr-daily-backup-rule"
             ScheduleExpression: "cron(0 3 ? * * *)"
             StartWindowMinutes: 60
             TargetBackupVault: !Ref BackupVaultDaily
@@ -46,7 +46,7 @@ Resources:
             Lifecycle:
               DeleteAfterDays: 90
             RecoveryPointTags: {}
-            RuleName: "edfx-monthly-backup-rule"
+            RuleName: "rsr-monthly-backup-rule"
             ScheduleExpression: "cron(0 2 1 * ? *)"
             StartWindowMinutes: 60
             TargetBackupVault: !Ref BackupVaultMonthly
@@ -55,13 +55,13 @@ Resources:
     Type: "AWS::Backup::BackupPlan"
     Properties:
       BackupPlan:
-        BackupPlanName: "edfx-weekly-backup-plan"
+        BackupPlanName: "rsr-weekly-backup-plan"
         BackupPlanRule:
           - CompletionWindowMinutes: 10080
             Lifecycle:
               DeleteAfterDays: 21
             RecoveryPointTags: {}
-            RuleName: "edfx-weekly-backup-rule"
+            RuleName: "rsr-weekly-backup-rule"
             ScheduleExpression: "cron(0 5 ? * 1 *)"
             StartWindowMinutes: 60
             TargetBackupVault: !Ref BackupVaultWeekly
@@ -70,13 +70,13 @@ Resources:
     Type: "AWS::Backup::BackupPlan"
     Properties:
       BackupPlan:
-        BackupPlanName: "edfx-backup-archive-plan"
+        BackupPlanName: "rsr-backup-archive-plan"
         BackupPlanRule:
           - CompletionWindowMinutes: 10080
             Lifecycle:
               DeleteAfterDays: 1825
             RecoveryPointTags: {}
-            RuleName: "edfx-backup-archive-rule"
+            RuleName: "rsr-backup-archive-rule"
             ScheduleExpression: "cron(0 5 ? * 1#1 *)"
             StartWindowMinutes: 60
             TargetBackupVault: !Ref BackupVaultArchive
@@ -86,7 +86,7 @@ Resources:
     Properties:
       BackupPlanId: !Ref BackupPlanDaily
       BackupSelection:
-        SelectionName: "edfx-daily-backup-resources"
+        SelectionName: "rsr-daily-backup-resources"
         IamRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AWSBackupDefaultServiceRole"
         ListOfTags:
           - ConditionType: "STRINGEQUALS"
@@ -98,7 +98,7 @@ Resources:
     Properties:
       BackupPlanId: !Ref BackupPlanMonthly
       BackupSelection:
-        SelectionName: "edfx-monthly-backup-resources"
+        SelectionName: "rsr-monthly-backup-resources"
         IamRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AWSBackupDefaultServiceRole"
         ListOfTags:
           - ConditionType: "STRINGEQUALS"
@@ -110,7 +110,7 @@ Resources:
     Properties:
       BackupPlanId: !Ref BackupPlanWeekly
       BackupSelection:
-        SelectionName: "edfx-weekly-backup-resources"
+        SelectionName: "rsr-weekly-backup-resources"
         IamRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AWSBackupDefaultServiceRole"
         ListOfTags:
           - ConditionType: "STRINGEQUALS"
@@ -122,9 +122,9 @@ Resources:
     Properties:
       BackupPlanId: !Ref BackupPlanArchive
       BackupSelection:
-        SelectionName: "edfx-backup-archive-resources"
+        SelectionName: "rsr-backup-archive-resources"
         IamRoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AWSBackupDefaultServiceRole"
         ListOfTags:
           - ConditionType: "STRINGEQUALS"
-            ConditionKey: "edfx-backup-archive"
+            ConditionKey: "rsr-backup-archive"
             ConditionValue: "five-years"
